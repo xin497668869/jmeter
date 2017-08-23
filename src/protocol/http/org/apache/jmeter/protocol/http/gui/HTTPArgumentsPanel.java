@@ -18,12 +18,6 @@
 
 package org.apache.jmeter.protocol.http.gui;
 
-import java.util.Iterator;
-
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.config.Argument;
@@ -36,6 +30,9 @@ import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.GuiUtils;
 import org.apache.jorphan.gui.ObjectTableModel;
 import org.apache.jorphan.reflect.Functor;
+
+import javax.swing.*;
+import java.util.Iterator;
 
 /**
  * A GUI panel allowing the user to enter HTTP Parameters.
@@ -52,26 +49,28 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
 
     @Override
     protected void initializeTableModel() {
-        tableModel = new ObjectTableModel(new String[] {
-                ArgumentsPanel.COLUMN_RESOURCE_NAMES_0, ArgumentsPanel.COLUMN_RESOURCE_NAMES_1, ENCODE_OR_NOT, INCLUDE_EQUALS },
+        tableModel = new ObjectTableModel(new String[]{
+                ArgumentsPanel.COLUMN_RESOURCE_NAMES_0, ArgumentsPanel.COLUMN_RESOURCE_NAMES_1, ArgumentsPanel.COLUMN_RESOURCE_NAMES_2, ENCODE_OR_NOT, INCLUDE_EQUALS},
                 HTTPArgument.class,
-                new Functor[] {
-                new Functor("getName"), //$NON-NLS-1$
-                new Functor("getValue"), //$NON-NLS-1$
-                new Functor("isAlwaysEncoded"), //$NON-NLS-1$
-                new Functor("isUseEquals") }, //$NON-NLS-1$
-                new Functor[] {
-                new Functor("setName"), //$NON-NLS-1$
-                new Functor("setValue"), //$NON-NLS-1$
-                new Functor("setAlwaysEncoded"), //$NON-NLS-1$
-                new Functor("setUseEquals") }, //$NON-NLS-1$
-                new Class[] {String.class, String.class, Boolean.class, Boolean.class });
+                new Functor[]{
+                        new Functor("getName"), //$NON-NLS-1$
+                        new Functor("getValue"), //$NON-NLS-1$
+                        new Functor("getDescription"), //$NON-NLS-1$
+                        new Functor("isAlwaysEncoded"), //$NON-NLS-1$
+                        new Functor("isUseEquals")}, //$NON-NLS-1$
+                new Functor[]{
+                        new Functor("setName"), //$NON-NLS-1$
+                        new Functor("setValue"), //$NON-NLS-1$
+                        new Functor("setDescription"),
+                        new Functor("setAlwaysEncoded"), //$NON-NLS-1$
+                        new Functor("setUseEquals")}, //$NON-NLS-1$
+                new Class[]{String.class, String.class, String.class, Boolean.class, Boolean.class});
     }
 
-    public static boolean testFunctors(){
+    public static boolean testFunctors() {
         HTTPArgumentsPanel instance = new HTTPArgumentsPanel();
         instance.initializeTableModel();
-        return instance.tableModel.checkFunctors(null,instance.getClass());
+        return instance.tableModel.checkFunctors(null, instance.getClass());
     }
 
     @Override
@@ -102,7 +101,7 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
 
     /**
      * Convert the argument panel contents to an {@link Arguments} collection.
-     * 
+     *
      * @return a collection of {@link HTTPArgument} entries
      */
     public Arguments getParameters() {
@@ -113,7 +112,7 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
     private Arguments getUnclonedParameters() {
         stopTableEditing();
         @SuppressWarnings("unchecked") // only contains Argument (or HTTPArgument)
-        Iterator<HTTPArgument> modelData = (Iterator<HTTPArgument>) tableModel.iterator();
+                Iterator<HTTPArgument> modelData = (Iterator<HTTPArgument>) tableModel.iterator();
         Arguments args = new Arguments();
         while (modelData.hasNext()) {
             HTTPArgument arg = modelData.next();
@@ -147,25 +146,25 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
         argument.setName(clipboardCols[0]);
         if (clipboardCols.length > 1) {
             argument.setValue(clipboardCols[1]);
-            
+
             if (clipboardCols.length > 2) {
-                
+
                 // default to false if the string is not a boolean
                 argument.setAlwaysEncoded(Boolean.parseBoolean(clipboardCols[2]));
-                
+
                 if (clipboardCols.length > 3) {
                     Boolean useEqual = BooleanUtils.toBooleanObject(clipboardCols[3]);
                     // default to true if the string is not a boolean
-                    argument.setUseEquals(useEqual!=null?useEqual.booleanValue():true);
+                    argument.setUseEquals(useEqual != null ? useEqual.booleanValue() : true);
                 }
             }
         }
-        
+
         return argument;
     }
 
     private void init() { // WARNING: called from ctor so must not be overridden (i.e. must be private or final)
-        
+
         // register the right click menu
         JTable table = getTable();
         final JPopupMenu popupMenu = new JPopupMenu();
@@ -174,10 +173,10 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
         popupMenu.add(variabilizeItem);
         table.setComponentPopupMenu(popupMenu);
     }
-    
-    /** 
-     * replace the argument value of the selection with a variable 
-     * the variable name is derived from the parameter name 
+
+    /**
+     * replace the argument value of the selection with a variable
+     * the variable name is derived from the parameter name
      */
     private void transformNameIntoVariable() {
         int[] rowsSelected = getTable().getSelectedRows();
@@ -192,5 +191,5 @@ public class HTTPArgumentsPanel extends ArgumentsPanel {
             }
         }
     }
-    
+
 }

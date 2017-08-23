@@ -181,6 +181,8 @@ public abstract class HTTPSamplerBase extends AbstractSampler
 
     public static final String CONCURRENT_POOL = "HTTPSampler.concurrentPool"; // $NON-NLS-1$
 
+    public static final String RESPONSE_COMMENT = "HTTPSampler.responseComment";
+
     public static final int CONCURRENT_POOL_SIZE = 6; // Default concurrent pool size for download embedded resources
 
     private static final String CONCURRENT_POOL_DEFAULT = Integer.toString(CONCURRENT_POOL_SIZE); // default for concurrent pool
